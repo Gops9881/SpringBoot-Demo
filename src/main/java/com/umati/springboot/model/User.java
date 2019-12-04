@@ -20,11 +20,24 @@ public class User {
     @ApiModelProperty(notes = "Username for the user ")
     private String username;
     @ApiModelProperty(notes = "User full name for the User ")
-    private String fullName;
+    private String fullname;
     @ApiModelProperty(notes = "User address for the User")
     private String address;
     @ApiModelProperty(notes = "User mobile number for the User")
     private long mobile;
+    @ApiModelProperty(notes = "User password for the User")
+    private String password;
+
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+
 
     public User()
     {
@@ -36,11 +49,12 @@ public class User {
         return super.equals(o);
     }
 
-    public User( String username, String fullName, String address, long mobile) {
-        this.username = username;
-        this.fullName = fullName;
+    public User( String userName, String fullName, String address, long mobile ,String password) {
+        this.username = userName;
+        this.fullname = fullName;
         this.address = address;
         this.mobile = mobile;
+        this.password=password;
     }
 
 
@@ -53,11 +67,11 @@ public class User {
     }
 
     public String getFullName() {
-        return fullName;
+        return fullname;
     }
 
     public void setFullName(String fullName) {
-        this.fullName = fullName;
+        this.fullname = fullName;
     }
 
     public String getAddress() {

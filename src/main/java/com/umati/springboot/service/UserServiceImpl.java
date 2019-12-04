@@ -6,18 +6,22 @@ import com.umati.springboot.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service("userService")
 public class UserServiceImpl implements UserService {
 
     @Autowired
     UserRepository userrepo;
-
+    @Autowired
+    private BCryptPasswordEncoder bcryptEncoder;
 
     @Override
     public User findById(long id) throws ResourceNotFoundException {
@@ -28,13 +32,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> findAllUser() {
-        List<User> list= userrepo.findAll();
+        List<User> list = new ArrayList<>();
+        userrepo.findAll().iterator().forEachRemaining(list::add);
         return list;
     }
 
     @Override
     public User addUser(User user) {
-        return  userrepo.save(user);
+        User newUser = new User();
+        newUser.setUsername(user.getUsername());
+        newUser.setFullName(user.getFullName());
+        newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
+        newUser.setMobile(user.getMobile());
+        newUser.setAddress(user.getAddress());
+        return userrepo.save(newUser);
+
     }
 
     @Override
@@ -56,4 +68,7 @@ public class UserServiceImpl implements UserService {
         final User userUpdated=userrepo.save(usertoUpdate);
         return userUpdated;
     }
+
+
+
 }

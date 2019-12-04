@@ -12,4 +12,5 @@ public interface UserService {
     User addUser(User user);
     Map<String, Boolean> deleteUser(long id) throws ResourceNotFoundException;
     User updateUser(long id,User user) throws ResourceNotFoundException;
+
 }

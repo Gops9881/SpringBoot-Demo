@@ -6,6 +6,8 @@ import com.umati.springboot.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+
+import org.apache.log4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +16,16 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
+@CrossOrigin(origins = "*")
 @RestController
 @Api(value = "User Managment System",description = "It is used to manage the user data")
 public class UserController {
+
     @Autowired
     UserService userService;
+    final static Logger log=Logger.getLogger(UserController.class);
     @ApiOperation(value = "List all user from the System", response = List.class)
     @RequestMapping(value = "/users" ,method = RequestMethod.GET)
     public ResponseEntity<List<User>> listAllUsers() {
@@ -33,10 +39,13 @@ public class UserController {
         User list= userService.findById(id);
         return new ResponseEntity<User>(list,HttpStatus.OK);
     }
+
     @ApiOperation(value="Create the user to the System",response = User.class)
     @RequestMapping(value = "/user",method = RequestMethod.POST)
-    public User createUser( @ApiParam(value = "User Information to be added",required = true) @Valid @RequestBody User user){
-        return userService.addUser(user);
+    public User createUser( @ApiParam(value = "User Information to be added",required = true) @Valid @RequestBody User user1){
+        log.info("Creating the User"+user1);
+        return userService.addUser(user1);
+
     }
     @ApiOperation(value = "User information to be Updated",response = User.class)
     @RequestMapping(value = "/user/{id}",method = RequestMethod.PUT )
@@ -49,4 +58,14 @@ public class UserController {
     public Map<String, Boolean> deleteUser(@ApiParam(value = "User id to be deleted from the system",required = true ) @PathVariable(value = "id") long id) throws ResourceNotFoundException{
             return userService.deleteUser(id);
     }
+    @RequestMapping(value="/secured",method = RequestMethod.POST)
+    public Boolean Protected(@ApiParam(value = "User Information to be added",required = true) @Valid @RequestBody User user) throws ResourceNotFoundException{
+        for(User u:userService.findAllUser()){
+            if(u.getUsername().equals(user.getUsername())&&u.getPassword().equals(user.getPassword())){
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
