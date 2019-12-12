@@ -2,6 +2,7 @@ package com.umati.springboot.model;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -27,17 +28,16 @@ public class User {
     private long mobile;
     @ApiModelProperty(notes = "User password for the User")
     private String password;
+    @ApiModelProperty(notes = "User status for the User")
+    private boolean isActivated;
 
 
     public String getPassword() {
         return password;
     }
-
     public void setPassword(String password) {
         this.password = password;
     }
-
-
 
     public User()
     {
@@ -49,12 +49,13 @@ public class User {
         return super.equals(o);
     }
 
-    public User( String userName, String fullName, String address, long mobile ,String password) {
+    public User(String userName, String fullname, String address, long mobile, String password, boolean isActivated) {
         this.username = userName;
-        this.fullname = fullName;
+        this.fullname = fullname;
         this.address = address;
         this.mobile = mobile;
         this.password=password;
+        this.isActivated = isActivated;
     }
 
 
@@ -66,12 +67,12 @@ public class User {
         this.username = username;
     }
 
-    public String getFullName() {
+    public String getfullname() {
         return fullname;
     }
 
-    public void setFullName(String fullName) {
-        this.fullname = fullName;
+    public void setfullname(String fullname) {
+        this.fullname = fullname;
     }
 
     public String getAddress() {
@@ -101,5 +102,13 @@ public class User {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public boolean isActivated() {
+        return isActivated;
+    }
+
+    public void setActivated(boolean activated) {
+        isActivated = activated;
     }
 }

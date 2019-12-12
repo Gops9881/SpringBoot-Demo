@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service("userService")
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService ,UserDetailsService{
 
     @Autowired
     UserRepository userrepo;
@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
     private BCryptPasswordEncoder bcryptEncoder;
 
     @Override
-    public User findById(long id) throws ResourceNotFoundException {
+    public User getUserById(long id) throws ResourceNotFoundException {
 
         User list = userrepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("User Not avaiable"));
         return list;
@@ -41,10 +41,11 @@ public class UserServiceImpl implements UserService {
     public User addUser(User user) {
         User newUser = new User();
         newUser.setUsername(user.getUsername());
-        newUser.setFullName(user.getFullName());
+        newUser.setfullname(user.getfullname());
         newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
         newUser.setMobile(user.getMobile());
         newUser.setAddress(user.getAddress());
+        newUser.setActivated(false);
         return userrepo.save(newUser);
 
     }
@@ -61,14 +62,30 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(long id,User user) throws ResourceNotFoundException {
         User usertoUpdate=userrepo.findById(id).orElseThrow(()->new ResourceNotFoundException("No user to update"+id));
-        usertoUpdate.setFullName(user.getFullName());
+        usertoUpdate.setfullname(user.getfullname());
         usertoUpdate.setAddress(user.getAddress());
         usertoUpdate.setUsername(user.getUsername());
         usertoUpdate.setMobile(user.getMobile());
+        usertoUpdate.setActivated(user.isActivated());
         final User userUpdated=userrepo.save(usertoUpdate);
         return userUpdated;
     }
 
+    @Override
+    public User getUserByUsername(String username) throws ResourceNotFoundException {
+        User user=userrepo.findByUsername(username);
+        if(user == null)throw new UsernameNotFoundException(username);
+        return user;
+    }
 
-
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user=userrepo.findByUsername(username);
+        if(user == null) throw new UsernameNotFoundException(username);
+        if(user.isActivated()){
+            return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(),new ArrayList<>());
+        }else{
+           throw new UsernameNotFoundException(username);
+        }
+    }
 }
