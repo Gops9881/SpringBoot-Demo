@@ -1,4 +1,4 @@
-package com.umati.springboot.Controller;
+package com.umati.springboot.controller;
 
 import com.umati.springboot.customexceptions.ResourceNotFoundException;
 import com.umati.springboot.model.User;

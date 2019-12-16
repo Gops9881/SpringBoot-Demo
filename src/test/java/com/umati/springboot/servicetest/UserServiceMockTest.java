@@ -1,6 +1,5 @@
-package com.umati.springbootTest.ServiceTest;
+package com.umati.springboot.servicetest;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.umati.springboot.customexceptions.ResourceNotFoundException;
 import com.umati.springboot.model.User;
 import com.umati.springboot.repository.UserRepository;

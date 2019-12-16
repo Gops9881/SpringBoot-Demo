@@ -1,6 +1,5 @@
-package com.umati.springbootTest;
+package com.umati.springboot;
 
-import com.umati.springboot.Application;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
