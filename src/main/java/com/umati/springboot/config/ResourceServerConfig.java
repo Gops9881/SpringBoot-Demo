@@ -22,10 +22,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
             "/configuration/security",
             "/swagger-ui.html",
             "/webjars/**",
-            "/user",
-            "/users",
-            "/user/**"
-
+            "/user"
     };
 
     private static final String RESOURCE_ID = "resource_id";
@@ -40,7 +37,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers(AUTH_WHITELIST).permitAll()
-                .anyRequest().authenticated().and()
+                .and()
                 .exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
     }
 
