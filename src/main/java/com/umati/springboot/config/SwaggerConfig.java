@@ -1,4 +1,3 @@
-/*
 package com.umati.springboot.config;
 
 import org.springframework.context.annotation.Bean;
@@ -28,4 +27,3 @@ public class SwaggerConfig {
                 .build();
     }
 }
-*/

@@ -6,21 +6,25 @@ import com.umati.springboot.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service("userService")
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService ,UserDetailsService{
 
     @Autowired
     UserRepository userrepo;
-
+    @Autowired
+    private BCryptPasswordEncoder bcryptEncoder;
 
     @Override
-    public User findById(long id) throws ResourceNotFoundException {
+    public User getUserById(long id) throws ResourceNotFoundException {
 
         User list = userrepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("User Not avaiable"));
         return list;
@@ -28,13 +32,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> findAllUser() {
-        List<User> list= userrepo.findAll();
+        List<User> list = new ArrayList<>();
+        userrepo.findAll().iterator().forEachRemaining(list::add);
         return list;
     }
 
     @Override
     public User addUser(User user) {
-        return  userrepo.save(user);
+        User newUser = new User();
+        newUser.setUsername(user.getUsername());
+        newUser.setfullname(user.getfullname());
+        newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
+        newUser.setMobile(user.getMobile());
+        newUser.setAddress(user.getAddress());
+        newUser.setActivated(false);
+        return userrepo.save(newUser);
+
     }
 
     @Override
@@ -49,11 +62,29 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(long id,User user) throws ResourceNotFoundException {
         User usertoUpdate=userrepo.findById(id).orElseThrow(()->new ResourceNotFoundException("No user to update"+id));
-        usertoUpdate.setFullName(user.getFullName());
+        usertoUpdate.setfullname(user.getfullname());
         usertoUpdate.setAddress(user.getAddress());
         usertoUpdate.setUsername(user.getUsername());
         usertoUpdate.setMobile(user.getMobile());
+        usertoUpdate.setActivated(user.isActivated());
         final User userUpdated=userrepo.save(usertoUpdate);
         return userUpdated;
+    }
+
+    @Override
+    public User getUserByUsername(String username) throws ResourceNotFoundException {
+        User user=userrepo.findByUsername(username);
+        if(user == null)throw new UsernameNotFoundException(username);
+        return user;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user=userrepo.findByUsername(username);
+        if(user == null)
+            throw new UsernameNotFoundException(username);
+        else{
+            return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(),user.isActivated(),true,true,true,new ArrayList<>());
+        }
     }
 }
